@@ -34,13 +34,6 @@ int main()
         /*conversion from RGB - HSV*/ 
         cvtColor(left, hsv_image, COLOR_BGR2HSV);
 
-        /*defining colour thresholds*/
-        Scalar lower_red (0,100,100), upper_red (20,200,200);
-
-        Mat mask_red; // variable to store the output of the mask
-
-        inRange(hsv_image, lower_red, upper_red, mask_red);
-
         /*gets the hsv colour value at the centre of the pixel hsv_image */
         Vec3b hsv_image_pixel = hsv_image.at<Vec3b> (centrePoint);
         int hue = hsv_image_pixel[0];
@@ -48,40 +41,64 @@ int main()
         int val = hsv_image_pixel[2];
 
         string textColour;
+
         /*RED*/
-        if ((hue >= 170 && hue <= 179) || (hue >= 1 && hue <= 9)) {
-            if (sat >=125 && sat <= 250) {
-                textColour = "RED";
-                putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,0,255), 2);
+        if ((hue >= 165 && hue <= 179) || (hue >= 1 && hue <= 9)) {
+            if (sat >=125 && sat <= 255) {
+                if (val >= 30 && val <= 250) {
+                    textColour = "RED";
+                    putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,0,255), 2);
+                }
             }
         }
 
         /*GREEN*/
-        if (hue >= 50 && hue <= 65) {
-            if (sat >= 125 && sat <=250) {
-                textColour = "GREEN";
-                putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,255,0), 2);
+        if (hue >= 50 && hue <= 76) {
+            if (sat >= 125 && sat <=255) {
+                if(val >= 15 && val <= 255) {
+                    textColour = "GREEN";
+                    putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,255,0), 2);
+                }
             }
         }
 
         /*BLUE*/
-        if (hue >= 105 && hue <= 125) {
-            if (sat >= 125 && sat <= 250) {
-                textColour = "BLUE";
-                putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(255,0,0), 2);
+        if (hue >= 99 && hue <= 125) {
+            if (sat >= 125 && sat <= 255) {
+                if (val >= 9 && val <= 255) {
+                    textColour = "BLUE";
+                    putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(255,0,0), 2);
+                }
             }
         }
 
         /*YELLOW*/
         if (hue >= 25 && hue <= 35) {
-            if (sat >= 125 && sat <= 250) {
-                textColour = "YELLOW";
-                putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,0,255), 2);
+            if (sat >= 100 && sat <= 255) {
+                if (val >= 30 && val <= 255) {
+                    textColour = "YELLOW";
+                    putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(0,255,255), 2);
+                }
+            }
+        }
+
+        /*PURPLE*/
+        if (hue >= 137 && hue <= 166) {
+            if (sat >= 100 && sat <= 255) {
+                if (val >= 30 && val <= 255) {
+                    textColour = "PURPLE";
+                    putText(left, textColour, centrePoint+Point(200,200), FONT_HERSHEY_SIMPLEX, 1, Scalar(255,0,255), 2);
+                }
             }
         }
 
 
-        cout << val << endl;
+
+        /* for debugging */
+        cout << "hue:" << hue << endl;
+        cout << "sat:" << sat << endl;;
+        cout << "val:" << val << endl << endl;
+
 
         /*drawing functions*/
         circle(left, centrePoint, 15, Scalar(255,255,255), 2); //draw a circle to show the pixel being measured
