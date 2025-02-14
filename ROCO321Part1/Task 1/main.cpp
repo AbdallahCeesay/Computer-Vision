@@ -73,7 +73,7 @@ int main()
         }
 
         /*YELLOW*/
-        if (hue >= 25 && hue <= 35) {
+        if (hue >= 19 && hue <= 35) {
             if (sat >= 100 && sat <= 255) {
                 if (val >= 30 && val <= 255) {
                     textColour = "YELLOW";
