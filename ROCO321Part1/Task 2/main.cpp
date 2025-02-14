@@ -1,4 +1,4 @@
-//James Rogers Nov 2023 (c) Plymouth University
+﻿//James Rogers Nov 2023 (c) Plymouth University
 
 #include <iostream>
 #include <fstream>
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "../owl.h"
+#include <opencv2/opencv.hpp> // library for colour conversion
 
 using namespace std;
 using namespace cv;
@@ -19,24 +20,32 @@ int main()
 
     while (true){
         //read the owls camera frames
-        Mat left, right;
+        Mat left, right, FrameHSV;
         owl.getCameraFrames(left, right);
 
-        //your tracking code here
+
+        // colour conversion
+        cvtColor(left, FrameHSV, COLOR_BGR2HSV);
+
+        Mat FrameFiltered;
+
+        /*threshold for yellow (hue, sat, val)*/
+        Vec3b LowerBound (19, 100, 30);
+        Vec3b UpperBound (35, 255, 255);
+
+        inRange(FrameHSV, LowerBound, UpperBound, FrameFiltered);
+
+        int hue_lower = LowerBound[0];
+        int hue_upper = UpperBound[0];
 
 
-
-
-
-
-
-
-
+        cout << hue_lower << endl;
+        cout << hue_upper << endl;
 
 
 
         //display camera frame
-        imshow("left",left);
+        imshow("left",FrameFiltered);
         waitKey(10);
     }
 }
