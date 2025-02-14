@@ -30,19 +30,35 @@ int main()
         Mat FrameFiltered;
 
         /*threshold for yellow (hue, sat, val)*/
-        Vec3b LowerBound (19, 100, 30);
+        Vec3b LowerBound (19, 100, 100);
         Vec3b UpperBound (35, 255, 255);
 
         inRange(FrameHSV, LowerBound, UpperBound, FrameFiltered);
 
-        int hue_lower = LowerBound[0];
-        int hue_upper = UpperBound[0];
+        Moments m = moments (FrameFiltered, true);
 
+//        if (int (m.m00) == 0) { // sort this out later
 
-        cout << hue_lower << endl;
-        cout << hue_upper << endl;
+//            return 0;
+//        }
+        Point2f p (m.m10/m.m00, m.m01/m.m00); // the Point p is the centre of mass of the colour. m.m00 can't be 0
 
+        Scalar markerColor (0, 0, 255);
+        int markerSize = 15, markerThickness = 5;
+        drawMarker(FrameFiltered, p, markerColor, MARKER_CROSS, markerSize, markerThickness);
 
+        //owl.setServoAbsolutePositions(100,0,0,0, 100);
+
+        double px = m.m10/m.m00;
+        double py = m.m01/m.m00;
+
+        //owl.setServoRelativePositions(0, 0, int(px), int(py), 0);
+        //owl.setServoAbsolutePositions(0, 0, int(px), int(py), 0);
+
+        cout << "px: " << px << endl;
+        cout << "py: "<< py << endl << endl;;
+
+        // for debugging
 
         //display camera frame
         imshow("left",FrameFiltered);
