@@ -1,4 +1,4 @@
-//James Rogers Oct 2023 (c) Plymouth University
+﻿//James Rogers Oct 2023 (c) Plymouth University
 
 #ifndef OWL_H
 #define OWL_H
@@ -173,15 +173,15 @@ public:
         Ly=LyC-this->Ly;
         Neck=NeckC-this->Neck;
     }
-	
-	//get servo angles in radians for both the left and right eyes. a value of zero is looking straight forward, and positive is clockwise.
+
+        //get servo angles in radians for both the left and right eyes. a value of zero is looking straight forward, and positive is clockwise.
     void getServoAngles(float& left, float& right)
     {
         left=static_cast<float>(Lx-LxC)*SERVO_PWM2RAD;
         right=static_cast<float>(RxC-Rx)*SERVO_PWM2RAD;
     }
-	
-	
+
+
 
 private:
     SOCKET u_sock;
