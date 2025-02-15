@@ -19,7 +19,7 @@ int main()
     //connect with the owl and load calibration values
     robotOwl owl(1500, 1475, 1520, 1525, 1520);
 
-    owl.setServoAbsolutePositions(0,0,0,0,0); // default position
+    owl.setServoAbsolutePositions(0,0,0,0,0); // Resets servos to default positon
 
     while (true)
     {
@@ -44,31 +44,29 @@ int main()
 
         Moments m = moments(FrameFiltered, true);
 
-        if (m.m00 <= 0.999) { //division by zero error
+        if (int(m.m00) == 0) { //division by zero error
 
             cout << "divison by zero error" << endl;
-            owl.setServoAbsolutePositions(0,0,0,0,0);
+            owl.setServoRelativePositions(0,0,0,0,0);
 
-            m.m00 = 1;
+            continue;
         }
-        Point2f p (m.m10/m.m00, m.m01/m.m00); // the Point p is the centre of mass of the colour. m.m00 can't be 0
+
+        Point2f colourCentreMass (float(m.m10 / m.m00), float(m.m01 / m.m00)); // the Point p is the centre of mass of the colour. m.m00 can't be 0
 
         Scalar markerColor (0, 0, 255);
         int markerSize = 15, markerThickness = 5;
-        drawMarker(left, p, markerColor, MARKER_CROSS, markerSize, markerThickness);
+        drawMarker(left, colourCentreMass, markerColor, MARKER_CROSS, markerSize, markerThickness);
 
-        //owl.setServoAbsolutePositions(100,0,0,0, 100);
 
-        int px = int(p.x);
-        int py = int(p.y);
+        int px = int(colourCentreMass.x);
+        int py = int(colourCentreMass.y);
 
         int dx = (px - centreFrame_x) /normalised_value;
         int dy = -(py - centreFrame_y) /normalised_value;
 
 
         owl.setServoRelativePositions(0, 0, dx, dy, 0);
-
-
 
         // for debugging
 
