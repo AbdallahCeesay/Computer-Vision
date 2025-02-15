@@ -44,10 +44,14 @@ int main()
 
         Moments m = moments(FrameFiltered, true);
 
-        if (int(m.m00) == 0) { //division by zero error
+        if (m.m00 < 0.00001) { //division by zero error
 
             cout << "divison by zero error" << endl;
-            owl.setServoRelativePositions(0,0,0,0,0);
+            cout << "m.m00: " << m.m00 << endl << endl;
+            owl.setServoAbsolutePositions(0,0,0,0,0);
+
+            imshow("left",left);
+            waitKey(10);
 
             continue;
         }
