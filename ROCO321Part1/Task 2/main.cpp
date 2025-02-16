@@ -12,6 +12,8 @@
 using namespace std;
 using namespace cv;
 const int normalised_value = 5;
+const int offset = 20;
+//const float PI = 3.142;
 
 int main()
 {
@@ -36,7 +38,7 @@ int main()
 
 
         /*threshold for yellow (hue, sat, val)*/
-        Vec3b LowerBound (50, 100, 100);
+        Vec3b LowerBound (50, 100, 60);
         Vec3b UpperBound (76, 255, 255);
 
         Mat FrameFiltered;
@@ -58,6 +60,13 @@ int main()
 
         Point2f colourCentreMass (float(m.m10 / m.m00), float(m.m01 / m.m00)); // the Point p is the centre of mass of the colour. m.m00 can't be 0
 
+        // for debugging only
+        Vec3b hsvPixel = FrameHSV.at<Vec3b>(int(colourCentreMass.y), int(colourCentreMass.x));
+
+        int hue = hsvPixel[0];
+        int sat = hsvPixel[1];
+        int val = hsvPixel[2];
+
         Scalar markerColor (0, 0, 255);
         int markerSize = 15, markerThickness = 5;
         drawMarker(left, colourCentreMass, markerColor, MARKER_CROSS, markerSize, markerThickness);
@@ -70,14 +79,17 @@ int main()
         int dy = -(py - centreFrame_y) /normalised_value;
 
 
-        owl.setServoRelativePositions(0, 0, dx, dy, 0);
+        owl.setServoRelativePositions(0, 0, dy, dx, 0);
+
+        int rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos;
+        owl.getRelativeServoPositions(rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos);
+
 
         // for debugging
-
-        cout << "px: " << px << endl;
-        cout << "py: "<< py << endl << endl;
         cout << "dx: " << dx << endl;
-        cout << "dy: " << dy << endl << endl;
+
+        cout << "leftRelativePos_x:" << neckRelativePos << endl;
+
 
         //display camera frame
         imshow("left",left);
