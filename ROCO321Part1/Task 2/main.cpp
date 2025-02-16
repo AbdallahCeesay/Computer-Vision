@@ -84,6 +84,8 @@ int main()
         int rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos;
         owl.getRelativeServoPositions(rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos);
 
+        /*if the leftRelativePos_x is beyond a certaain threshold, move the nect while moving the left_x in the opposite direction until the
+        *colour is back in the middle of the frame*/
 
         // for debugging
         cout << "dx: " << dx << endl;
