@@ -5,15 +5,12 @@
 #include <sys/types.h>
 #include <iostream>
 #include <string>
-
 #include "../owl.h"
 #include <opencv2/opencv.hpp> // library for colour conversion
 
 using namespace std;
 using namespace cv;
-const int normalised_value = 5;
-const int offset = 20;
-//const float PI = 3.142;
+const int normalised_value = 4.5;
 
 int main()
 {
@@ -29,15 +26,12 @@ int main()
         owl.getCameraFrames(left, right);
 
         Point2f centreFrame (left.size().width/2, left.size().height/2);
-
         int centreFrame_x = int(centreFrame.x);
         int centreFrame_y = int(centreFrame.y);
 
-
         cvtColor(left, FrameHSV, COLOR_BGR2HSV); // colour conversion
 
-
-        /*threshold for yellow (hue, sat, val)*/
+        /*threshold for GREEN (hue, sat, val)*/
         Vec3b LowerBound (50, 100, 60);
         Vec3b UpperBound (76, 255, 255);
 
@@ -46,7 +40,7 @@ int main()
 
         Moments m = moments(FrameFiltered, true);
 
-        if (m.m00 < 0.00001) { //division by zero error
+        if (m.m00 < 0.00001) { //division by zero error check
 
             cout << "divison by zero error" << endl;
             cout << "m.m00: " << m.m00 << endl << endl;
@@ -58,11 +52,10 @@ int main()
             continue;
         }
 
-        Point2f colourCentreMass (float(m.m10 / m.m00), float(m.m01 / m.m00)); // the Point p is the centre of mass of the colour. m.m00 can't be 0
+        Point2f colourCentreMass (float(m.m10 / m.m00), float(m.m01 / m.m00));
 
         // for debugging only
         Vec3b hsvPixel = FrameHSV.at<Vec3b>(int(colourCentreMass.y), int(colourCentreMass.x));
-
         int hue = hsvPixel[0];
         int sat = hsvPixel[1];
         int val = hsvPixel[2];
@@ -78,20 +71,14 @@ int main()
         int dx = (px - centreFrame_x) /normalised_value;
         int dy = -(py - centreFrame_y) /normalised_value;
 
-
-        owl.setServoRelativePositions(0, 0, dy, dx, 0);
+        owl.setServoRelativePositions(0, 0, dx, dy, 0);
 
         int rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos;
         owl.getRelativeServoPositions(rightRelativePos_x, rightRelativePos_y, leftRelativePos_x, leftRelativePos_y, neckRelativePos);
 
-        /*if the leftRelativePos_x is beyond a certaain threshold, move the nect while moving the left_x in the opposite direction until the
-        *colour is back in the middle of the frame*/
-
-        // for debugging
-        cout << "dx: " << dx << endl;
-
-        cout << "leftRelativePos_x:" << neckRelativePos << endl;
-
+        if (leftRelativePos_x > 270 || leftRelativePos_x < -250) {
+            owl.setServoRelativePositions(0, 0, (-dx*3), dy, dx);
+        }
 
         //display camera frame
         imshow("left",left);
