@@ -115,7 +115,7 @@ int main()
             int leftCameraFrame_dy = (leftCamera_CentreFrame_y - targetCentreLeft.y);
 
             // track the target with the left eye
-            owl.setServoRelativePositions(0, 0, minLocationLeft.x, minLocationLeft.y, 0);
+            owl.setServoRelativePositions(0, 0, leftCameraFrame_dx, leftCameraFrame_dy, 0);
 
 //            cout << "leftCamera_CentreFrame_x: " << leftCamera_CentreFrame_x << endl;
 //            cout << "leftCamera_CentreFrame_y: " << leftCamera_CentreFrame_y << endl << endl;
