@@ -11,7 +11,7 @@
 using namespace std;
 using namespace cv;
 
-#define targetSize 60 //adjust this to change the size of your target
+#define targetSize 50 //adjust this to change the size of your target
 
 int main()
 {
@@ -36,134 +36,130 @@ int main()
 
         //display camera frame
         rectangle(left, targetPos, Scalar(255,255,255), 2);
-        imshow("left",left);        
+        imshow("left",left);
     }
 
     //===========================target tracking loop================================
     cout<<"Starting tracking code..."<<endl;
+
     while(1)
     {
         //read the owls camera frames
         Mat left, right, matchOutputLeft, matchOutputRight;
         owl.getCameraFrames(left, right);
 
-        //your tracking code goes here
-        /*matchTempllate for the left eye*/
+        /*========================== matchTemplate for the left eye =================================*/
         matchTemplate(left, target, matchOutputLeft, TM_SQDIFF_NORMED);
-
         double minValueLeft, maxValue;
         Point minLocationLeft, maxLocationLeft;
-
         minMaxLoc(matchOutputLeft, &minValueLeft, &maxValue, &minLocationLeft, &maxLocationLeft);
 
 
-        /*target visibility threshold left eye*/
-
-        double thresholdLeft = 0.2;
-        Point targetCentreLeft(minLocationLeft.x + target.cols / 2, minLocationLeft.y + target.rows / 2);
-        if(minValueLeft < thresholdLeft)
-        {
-            /*calculate the centre of the target*/
-
-
-            Scalar markerColour(0, 0, 255);
-            int markerSize = 15, markerThickness = 5;
-
-            drawMarker(left, targetCentreLeft, markerColour, MARKER_CROSS, markerSize, markerThickness);
-        }
-        else {
-            cout << "Target not found - Left eye" << endl;
-        }
-
-
-        //================== matchTemplate for the right eye =======================================
+        //=========================== matchTemplate for the right eye ==============================
 
         matchTemplate(right, target, matchOutputRight, TM_SQDIFF_NORMED);
-
         double minValueRight, maxValueRight;
         Point minLocationRight, maxLocationRight;
-
         minMaxLoc(matchOutputRight, &minValueRight, &maxValueRight, &minLocationRight, &maxLocationRight);
 
-        //target visibility threshold right eye*/
-        double thresholdRight = 0.2;
-        if(minValueRight < thresholdRight)
-        {
-            /*calculate the centre of the target*/
-            Point targetCentreRight(minLocationRight.x + target.cols / 2, minLocationRight.y + target.rows / 2);
 
+        //================================ Threshold =======================================
+        double visibilityThreshold = 0.1;
+        int trackingThreshold = 20; // size of the square around the centre
+        // add dynamic thresholding later
+
+
+        // ================================ Calculate Target Centres ==================================
+        Point targetCentreLeft(minLocationLeft.x + target.cols / 2, minLocationLeft.y + target.rows / 2);
+        Point targetCentreRight(minLocationRight.x + target.cols / 2, minLocationRight.y + target.rows / 2);
+
+
+        //========================== check target visiblity in both camera frames ===============================
+        bool targetVisibleLeft = minValueLeft < visibilityThreshold;
+        bool targetVisibleRight = minValueRight < visibilityThreshold;
+
+        if(targetVisibleLeft || targetVisibleRight) {
+
+            //Draw markers on the frame
             Scalar markerColour(0, 0, 255);
             int markerSize = 15, markerThickness = 5;
 
-            drawMarker(right, targetCentreRight, markerColour, MARKER_CROSS, markerSize, markerThickness);
+            drawMarker(left, targetCentreLeft, markerColour, MARKER_CROSS, markerSize, markerThickness);            // marker on left camera frame
+            drawMarker(right, targetCentreRight, markerColour, MARKER_CROSS, markerSize, markerThickness);          // marker on right camera frame
+
+
+            // LEFT CAMERA TRACKING
+            Point leftCamera_CentrePoint(left.size().width / 2, left.size().height / 2);
+            int leftCameraCentre_x = leftCamera_CentrePoint.x;
+            int leftCameraCentre_y = leftCamera_CentrePoint.y;
+
+            int leftCamera_dx = (targetCentreLeft.x - leftCameraCentre_x);
+            int leftCamera_dy = (targetCentreLeft.y - leftCameraCentre_y);
+
+
+            // RIGHT CAMERA TRACKING
+            Point rightCamera_CentrePoint(left.size().width / 2, left.size().height / 2);
+            int rightCameraCentre_x = rightCamera_CentrePoint.x;
+            int rightCameraCentre_y = rightCamera_CentrePoint.y;
+
+            int rightCamera_dx = (targetCentreRight.x - rightCameraCentre_x);
+            int RightCamera_dy = (targetCentreRight.y - rightCameraCentre_y);
+
+            // Draw the tracking threshold square on both camera frames
+            Scalar squareColour(0, 255, 0); // Green colour for the square
+            int squareThickness = 2;
+
+            // Draw square on the left camera frame
+            rectangle(left,
+                      Point(leftCameraCentre_x - trackingThreshold, leftCameraCentre_y - trackingThreshold),
+                      Point(leftCameraCentre_x + trackingThreshold, leftCameraCentre_y + trackingThreshold),
+                      squareColour, squareThickness);
+
+            // Draw square on the right camera frame
+            rectangle(right,
+                      Point(rightCameraCentre_x - trackingThreshold, rightCameraCentre_y - trackingThreshold),
+                      Point(rightCameraCentre_x + trackingThreshold, rightCameraCentre_y + trackingThreshold),
+                      squareColour, squareThickness);
+
+            // check if the target is outside the tracking threshold square
+            bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
+            bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(RightCamera_dy) > trackingThreshold;
+
+            if(targetOutOfThresholdLeft || targetOutOfThresholdRight) {
+
+                // normalised values
+                int normaliseValue = 2;
+
+                int dx_Left = leftCamera_dx / normaliseValue;
+                int dy_Left = leftCamera_dy / normaliseValue;
+
+                int dx_Right = rightCamera_dx / normaliseValue;
+                int dy_Right = RightCamera_dy / normaliseValue;
+
+                // track the target with the left and right eye
+                //owl.setServoRelativePositions(dx_Right, dy_Right, dx_Left, dy_Left, 0);
+
+                cout << "dx_Left: " << dx_Left << endl;
+                cout << "dy_Left: " << dy_Left << endl << endl;
+
+                cout << "dx_Right: " << dx_Right << endl;
+                cout << "dy_Right: " << dy_Right << endl << endl;
+            }
+
         }
+
         else {
-            cout << "Target not found - Right eye" << endl;
-        }
-
-        //===================== Moving eyes to track the target ========================================
-
-
-        /*check if the target is visible in both camera frames*/
-        if(minValueLeft < thresholdLeft || minValueRight < thresholdRight) {
-
-            Point leftCamera_CentreFrame(left.size().width / 2, left.size().height / 2);
-            int leftCamera_CentreFrame_x = leftCamera_CentreFrame.x;
-            int leftCamera_CentreFrame_y = leftCamera_CentreFrame.y;
-
-            int leftCameraFrame_dx = (leftCamera_CentreFrame_x - targetCentreLeft.x);
-            int leftCameraFrame_dy = (leftCamera_CentreFrame_y - targetCentreLeft.y);
-
-            // track the target with the left eye
-            owl.setServoRelativePositions(0, 0, minLocationLeft.x, minLocationLeft.y, 0);
-
-//            cout << "leftCamera_CentreFrame_x: " << leftCamera_CentreFrame_x << endl;
-//            cout << "leftCamera_CentreFrame_y: " << leftCamera_CentreFrame_y << endl << endl;
-
-//            cout << "minLocationleft: " << minLocationLeft << endl;
-
-            cout << "leftCameraFrame_dx: " << leftCameraFrame_dx << endl;
-            cout << "leftCameraFrame_dy: " << leftCameraFrame_dy << endl;
-
-
-        }
-        else {
+            cout << "Target not found. Initiating search pattern" << endl;
+            cout << "minValue left: " << minValueLeft << endl;
+            cout << "minValue right: " << minValueRight << endl << endl;
             // centre the cameras or do a sweep to get if the target in visible. do this a set number of times and if the target is still
             //not visilble centre the camera frames
         }
-
-
-//        cout << "MinLocation left" << minLocationLeft << endl;
-//        cout << "MinLocation right" << minLocationRight << endl << endl;
-
-
 
         //display camera frames
         imshow("left", left);
         imshow("right", right);
         imshow("target", target);
-        imshow("matchOutputLeft", matchOutputLeft);
-        imshow("matchOutputRight", matchOutputRight);
         waitKey(10);
     }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
