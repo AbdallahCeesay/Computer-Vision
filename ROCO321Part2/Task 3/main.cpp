@@ -64,7 +64,7 @@ int main()
 
 
         //================================ Threshold =======================================
-        double visibilityThreshold = 0.1;
+        double visibilityThreshold = 0.27;
         int trackingThreshold = 20; // size of the square around the centre
         // add dynamic thresholding later
 
@@ -96,14 +96,13 @@ int main()
             int leftCamera_dx = (targetCentreLeft.x - leftCameraCentre_x);
             int leftCamera_dy = (targetCentreLeft.y - leftCameraCentre_y);
 
-
             // RIGHT CAMERA TRACKING
-            Point rightCamera_CentrePoint(left.size().width / 2, left.size().height / 2);
+            Point rightCamera_CentrePoint(right.size().width / 2, right.size().height / 2);
             int rightCameraCentre_x = rightCamera_CentrePoint.x;
             int rightCameraCentre_y = rightCamera_CentrePoint.y;
 
             int rightCamera_dx = (targetCentreRight.x - rightCameraCentre_x);
-            int RightCamera_dy = (targetCentreRight.y - rightCameraCentre_y);
+            int rightCamera_dy = (targetCentreRight.y - rightCameraCentre_y);
 
             // Draw the tracking threshold square on both camera frames
             Scalar squareColour(0, 255, 0); // Green colour for the square
@@ -123,7 +122,7 @@ int main()
 
             // check if the target is outside the tracking threshold square
             bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
-            bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(RightCamera_dy) > trackingThreshold;
+            bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(rightCamera_dy) > trackingThreshold;
 
             if(targetOutOfThresholdLeft || targetOutOfThresholdRight) {
 
@@ -134,16 +133,14 @@ int main()
                 int dy_Left = leftCamera_dy / normaliseValue;
 
                 int dx_Right = rightCamera_dx / normaliseValue;
-                int dy_Right = RightCamera_dy / normaliseValue;
+                int dy_Right = rightCamera_dy / normaliseValue;
 
                 // track the target with the left and right eye
                 //owl.setServoRelativePositions(dx_Right, dy_Right, dx_Left, dy_Left, 0);
 
-                cout << "dx_Left: " << dx_Left << endl;
-                cout << "dy_Left: " << dy_Left << endl << endl;
+                cout << "leftCamera_dx: " << leftCamera_dx << endl;
+                cout << "leftCamera_dy: " << leftCamera_dy << endl << endl;
 
-                cout << "dx_Right: " << dx_Right << endl;
-                cout << "dy_Right: " << dy_Right << endl << endl;
             }
 
         }
