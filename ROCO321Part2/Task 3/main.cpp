@@ -66,7 +66,6 @@ int main()
         //================================ Threshold =======================================
         double visibilityThreshold = 0.27;
         int trackingThreshold = 100; // size of the square around the centre
-        // add dynamic thresholding later
 
 
         // ================================ Calculate Target Centres ==================================
@@ -138,25 +137,30 @@ int main()
                 // track the target with the left and right eye
                 owl.setServoRelativePositions(dx_Right, -dy_Right, dx_Left, -dy_Left, 0);
 
-
                 cout << "leftCamera_dx: " << leftCamera_dx << endl;
                 cout << "leftCamera_dy: " << leftCamera_dy << endl << endl;
 
                 cout << "rightCamera_dx: " << rightCamera_dx << endl;
                 cout << "rightCamera_dy: " << rightCamera_dy << endl << endl;
-
-
-
             }
-
         }
 
         else {
             cout << "Target not found. Initiating search pattern" << endl;
             cout << "minValue left: " << minValueLeft << endl;
             cout << "minValue right: " << minValueRight << endl << endl;
-            // centre the cameras or do a sweep to get if the target in visible. do this a set number of times and if the target is still
-            //not visilble centre the camera frames
+
+            // Initiating search pattern
+            for (int n = 1; n < 100; n+= 10)
+            {
+               owl.setServoRelativePositions(0, 0, 0, 0, n);
+               waitKey(50);
+
+               if(n == 99){
+                   owl.setServoRelativePositions(0, 0, 0, 0, -n);
+                   waitKey(50);
+               }
+            }
         }
 
         //display camera frames
