@@ -65,7 +65,7 @@ int main()
 
         //================================ Threshold =======================================
         double visibilityThreshold = 0.27;
-        int trackingThreshold = 20; // size of the square around the centre
+        int trackingThreshold = 100; // size of the square around the centre
         // add dynamic thresholding later
 
 
@@ -121,13 +121,13 @@ int main()
                       squareColour, squareThickness);
 
             // check if the target is outside the tracking threshold square
-            bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
             bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(rightCamera_dy) > trackingThreshold;
+            bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
 
             if(targetOutOfThresholdLeft || targetOutOfThresholdRight) {
 
                 // normalised values
-                int normaliseValue = 2;
+                int normaliseValue = int(3.5);
 
                 int dx_Left = leftCamera_dx / normaliseValue;
                 int dy_Left = leftCamera_dy / normaliseValue;
@@ -136,10 +136,16 @@ int main()
                 int dy_Right = rightCamera_dy / normaliseValue;
 
                 // track the target with the left and right eye
-                //owl.setServoRelativePositions(dx_Right, dy_Right, dx_Left, dy_Left, 0);
+                owl.setServoRelativePositions(dx_Right, -dy_Right, dx_Left, -dy_Left, 0);
+
 
                 cout << "leftCamera_dx: " << leftCamera_dx << endl;
                 cout << "leftCamera_dy: " << leftCamera_dy << endl << endl;
+
+                cout << "rightCamera_dx: " << rightCamera_dx << endl;
+                cout << "rightCamera_dy: " << rightCamera_dy << endl << endl;
+
+
 
             }
 
