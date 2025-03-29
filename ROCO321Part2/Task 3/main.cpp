@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include "../owl.h"
 
@@ -64,8 +65,8 @@ int main()
 
 
         //================================ Threshold =======================================
-        double visibilityThreshold = 0.27;
-        int trackingThreshold = 100; // size of the square around the centre
+        double visibilityThreshold = 0.25;
+        int trackingThreshold = 75; // size of the square around the centre
 
 
         // ================================ Calculate Target Centres ==================================
@@ -123,7 +124,7 @@ int main()
             bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(rightCamera_dy) > trackingThreshold;
             bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
 
-            if(targetOutOfThresholdLeft || targetOutOfThresholdRight) {
+            if(targetOutOfThresholdLeft && targetOutOfThresholdRight) {
 
                 // normalised values
                 int normaliseValue = int(3.5);
@@ -137,11 +138,35 @@ int main()
                 // track the target with the left and right eye
                 owl.setServoRelativePositions(dx_Right, -dy_Right, dx_Left, -dy_Left, 0);
 
-                cout << "leftCamera_dx: " << leftCamera_dx << endl;
-                cout << "leftCamera_dy: " << leftCamera_dy << endl << endl;
 
-                cout << "rightCamera_dx: " << rightCamera_dx << endl;
-                cout << "rightCamera_dy: " << rightCamera_dy << endl << endl;
+                // calculating distance of target from left camera
+                // distance calculation variables
+
+                float l, r, l2, r2, x, y;
+
+                owl.getServoAngles(l,r); // get the left and right servo angle
+
+                float _90rad = M_PI / 2;
+                float _180rad = M_PI;
+
+                r2 = _90rad - r;
+                float r2Degrees = r2 * 180 / M_PI;
+
+                l2 = _90rad - l;
+                float l2Degrees  =  l2 * 180 / M_PI;
+
+                cout << "l2_Degrees: " << l2Degrees << endl;
+
+                cout << "r2_Degrees: " << r2Degrees << endl << endl;
+
+                y = _180rad - (r2 - l2);
+                float y_Degrees = y * 180 / M_PI;
+
+                cout << "y_Degrees: " << y_Degrees << endl;
+
+                 x = (67 * sin(r2)) / (sin(y));
+
+                 cout << "x: " << x << endl;
             }
         }
 
@@ -151,22 +176,36 @@ int main()
             cout << "minValue right: " << minValueRight << endl << endl;
 
             // Initiating search pattern
-            for (int n = 1; n < 100; n+= 10)
-            {
-               owl.setServoRelativePositions(0, 0, 0, 0, n);
-               waitKey(50);
+//            int searchRange = 300;
+//            int stepSize = 10;
 
-               if(n == 99){
-                   owl.setServoRelativePositions(0, 0, 0, 0, -n);
-                   waitKey(50);
-               }
-            }
+//            for (int n = 0; n <= searchRange; n+= stepSize)
+//            {
+//               owl.setServoRelativePositions(0, 0, 0, 0, stepSize);
+//               owl.getCameraFrames(left, right);
+//               imshow("left", left);
+//               imshow("righ", right);
+
+//               waitKey(5);
+//            }
+
+//            for(int m = 0; m <= searchRange; m+= stepSize)
+//            {
+//                owl.setServoRelativePositions(0, 0, 0, 0, -stepSize);
+//                owl.getCameraFrames(left, right);
+//                imshow("left", left);
+//                imshow("right", right);
+//                waitKey(5);
+//            }
+
+//            cout << "Min Value Left: " << minValueLeft << endl;
+//            cout << "Min Value Right: " << minValueRight << endl;
         }
 
         //display camera frames
         imshow("left", left);
         imshow("right", right);
         imshow("target", target);
-        waitKey(10);
+        waitKey(5);
     }
 }
