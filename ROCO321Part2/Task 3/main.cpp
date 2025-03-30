@@ -142,30 +142,23 @@ int main()
                 // calculating distance of target from left camera
                 // distance calculation variables
 
-                float leftCameraAngle, rightCameraAngle, l2, r2, x, y;
-                float lengthx = 67;
+                float leftCameraAngle, rightCameraAngle, l2, r2, distanceFromLeft, y;
+                float dx_eyes = 6.7;
 
                 owl.getServoAngles(leftCameraAngle,rightCameraAngle); // get the left and right servo angle.
 
-                r2 = M_PI / 2 - rightCameraAngle ;
-                l2 = M_PI / 2 - leftCameraAngle;
-                y = M_PI - (r2 + l2);
-
-                if (y > 0 && y < M_PI) {
+                r2 = 90 - rightCameraAngle ;
+                l2 = 90 - leftCameraAngle;
+                y = 180 - (r2 + l2);
                     
-                x = lengthx * sin(r2) / sin(y);
-                string lengthFromLeft = to_string(x);
+                distanceFromLeft = dx_eyes * sin(r2) / sin(y);
+                string lengthFromLeft = to_string(distanceFromLeft);
                 putText(left, lengthFromLeft, leftCamera_CentrePoint + Point(-100, 100), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 0, 255), 2);
-                
-                }
-                else{
-                    cout << "Invalid triangle: r2 + l2 exceeds 180 degrees." << endl;
-                    continue;
-                }
+            
                 cout << "r2: " << r2 << endl;
                 cout << "l2: " << l2 << endl;
                 cout << "y: " << y << endl << endl;
-                cout << "x: " << x << endl;
+                cout << "distanceFromLeft: " << distanceFromLeft << endl;
 
             }
         }
