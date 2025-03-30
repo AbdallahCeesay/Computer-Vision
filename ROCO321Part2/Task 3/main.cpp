@@ -66,7 +66,7 @@ int main()
 
         //================================ Threshold =======================================
         double visibilityThreshold = 0.25;
-        int trackingThreshold = 75; // size of the square around the centre
+        int trackingThreshold = 60; // size of the square around the centre
 
 
         // ================================ Calculate Target Centres ==================================
@@ -142,31 +142,31 @@ int main()
                 // calculating distance of target from left camera
                 // distance calculation variables
 
-                float l, r, l2, r2, x, y;
+                float leftCameraAngle, rightCameraAngle, l2, r2, x, y;
+                float lengthx = 67;
 
-                owl.getServoAngles(l,r); // get the left and right servo angle
+                owl.getServoAngles(leftCameraAngle,rightCameraAngle); // get the left and right servo angle.
 
-                float _90rad = M_PI / 2;
-                float _180rad = M_PI;
+                r2 = M_PI / 2 - rightCameraAngle ;
+                l2 = M_PI / 2 - leftCameraAngle;
+                y = M_PI - (r2 + l2);
 
-                r2 = _90rad - r;
-                float r2Degrees = r2 * 180 / M_PI;
+                if (y > 0 && y < M_PI) {
+                    
+                x = lengthx * sin(r2) / sin(y);
+                string lengthFromLeft = to_string(x);
+                putText(left, lengthFromLeft, leftCamera_CentrePoint + Point(-100, 100), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 0, 255), 2);
+                
+                }
+                else{
+                    cout << "Invalid triangle: r2 + l2 exceeds 180 degrees." << endl;
+                    continue;
+                }
+                cout << "r2: " << r2 << endl;
+                cout << "l2: " << l2 << endl;
+                cout << "y: " << y << endl << endl;
+                cout << "x: " << x << endl;
 
-                l2 = _90rad - l;
-                float l2Degrees  =  l2 * 180 / M_PI;
-
-                cout << "l2_Degrees: " << l2Degrees << endl;
-
-                cout << "r2_Degrees: " << r2Degrees << endl << endl;
-
-                y = _180rad - (r2 - l2);
-                float y_Degrees = y * 180 / M_PI;
-
-                cout << "y_Degrees: " << y_Degrees << endl;
-
-                 x = (67 * sin(r2)) / (sin(y));
-
-                 cout << "x: " << x << endl;
             }
         }
 
@@ -205,6 +205,8 @@ int main()
         //display camera frames
         imshow("left", left);
         imshow("right", right);
+        //imshow("Matched Left", matchOutputLeft);
+        //imshow("Matched Right", matchOutputRight);
         imshow("target", target);
         waitKey(5);
     }
