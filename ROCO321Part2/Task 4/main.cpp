@@ -13,7 +13,7 @@ int main(int argc, char** argv)
 {
 
     //connect with the owl and load calibration values
-    robotOwl owl(1500, 1475, 1520, 1525, 1520);
+    robotOwl owl(1560, 1625, 1500, 1470, 1520);
 
     //Calibration file paths
     string intrinsic_filename = "../intrinsics.xml";

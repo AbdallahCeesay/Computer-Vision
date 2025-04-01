@@ -16,7 +16,7 @@ void drawUI(Mat& left, Mat& right, char key);
 int main()
 {
     //connect with the owl and load calibration values
-    robotOwl owl(1500, 1475, 1520, 1525, 1520);
+    robotOwl owl(1560, 1625, 1500, 1470, 1520);
 
     while (true){
         //read the owls camera frames and record the users keypress
@@ -36,7 +36,7 @@ int main()
             case 'w': owl.setServoRelativePositions( 0, 0, 0, 5, 0); break;
             case 's': owl.setServoRelativePositions( 0, 0, 0,-5, 0); break;
             case 'a': owl.setServoRelativePositions( 0, 0,-5, 0, 0); break;
-            case 'd': owl.setServoRelativePositions( 0, 0, 5, 0, 0); break;
+            case 'd': owl.setServoRelativePositions( 0, 0, 3, 0, 0); break;
             case 'q': owl.setServoRelativePositions( 0, 0, 0, 0,-5); break;
             case 'e': owl.setServoRelativePositions( 0, 0, 0, 0, 5); break;
         }
