@@ -17,7 +17,7 @@ using namespace cv;
 int main()
 {
     //connect with the owl and load calibration values
-    robotOwl owl(1500, 1475, 1520, 1525, 1520);
+    robotOwl owl(1500, 1625, 1500, 1470, 1520);
 
     //===========================target selection loop==============================
     Mat target; // variable to store the template image
@@ -124,7 +124,7 @@ int main()
             bool targetOutOfThresholdRight = abs(rightCamera_dx) > trackingThreshold || abs(rightCamera_dy) > trackingThreshold;
             bool targetOutOfThresholdLeft = abs(leftCamera_dx) > trackingThreshold || abs(leftCamera_dy) > trackingThreshold;
 
-            if(targetOutOfThresholdLeft && targetOutOfThresholdRight) {
+            if(targetOutOfThresholdLeft || targetOutOfThresholdRight) {
 
                 // normalised values
                 int normaliseValue = int(3.5);
@@ -136,7 +136,7 @@ int main()
                 int dy_Right = rightCamera_dy / normaliseValue;
 
                 // track the target with the left and right eye
-                owl.setServoRelativePositions(dx_Right, -dy_Right, dx_Left, -dy_Left, 0);
+                owl.setServoRelativePositions(dx_Right, -dy_Right, dx_Left, -dy_Left, 0); 
 
 
                 // calculating distance of target from left camera
@@ -168,31 +168,31 @@ int main()
             cout << "minValue left: " << minValueLeft << endl;
             cout << "minValue right: " << minValueRight << endl << endl;
 
-            // Initiating search pattern
-//            int searchRange = 300;
-//            int stepSize = 10;
+            //Initiating search pattern
+           int searchRange = 300;
+           int stepSize = 10;
 
-//            for (int n = 0; n <= searchRange; n+= stepSize)
-//            {
-//               owl.setServoRelativePositions(0, 0, 0, 0, stepSize);
-//               owl.getCameraFrames(left, right);
-//               imshow("left", left);
-//               imshow("righ", right);
+           for (int n = 0; n <= searchRange; n+= stepSize)
+           {
+              owl.setServoRelativePositions(0, 0, 0, 0, stepSize);
+              owl.getCameraFrames(left, right);
+              imshow("left", left);
+              imshow("righ", right);
 
-//               waitKey(5);
-//            }
+              waitKey(5);
+           }
 
-//            for(int m = 0; m <= searchRange; m+= stepSize)
-//            {
-//                owl.setServoRelativePositions(0, 0, 0, 0, -stepSize);
-//                owl.getCameraFrames(left, right);
-//                imshow("left", left);
-//                imshow("right", right);
-//                waitKey(5);
-//            }
+           for(int m = 0; m <= searchRange; m+= stepSize)
+           {
+               owl.setServoRelativePositions(0, 0, 0, 0, -stepSize);
+               owl.getCameraFrames(left, right);
+               imshow("left", left);
+               imshow("right", right);
+               waitKey(5);
+           }
 
-//            cout << "Min Value Left: " << minValueLeft << endl;
-//            cout << "Min Value Right: " << minValueRight << endl;
+           cout << "Min Value Left: " << minValueLeft << endl;
+           cout << "Min Value Right: " << minValueRight << endl;
         }
 
         //display camera frames
